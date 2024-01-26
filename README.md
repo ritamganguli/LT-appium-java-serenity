@@ -1,221 +1,280 @@
-# Serenity with Appium
+# Getting started with Serenity and Cucumber
 
-<p align="center">
-  <a href="https://www.lambdatest.com/blog/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity" target="_bank">Blog</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/support/docs/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity" target="_bank">Docs</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/learning-hub/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity" target="_bank">Learning Hub</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/newsletter/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity" target="_bank">Newsletter</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.lambdatest.com/certifications/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity" target="_bank">Certifications</a>
-  &nbsp; &#8901; &nbsp;
-  <a href="https://www.youtube.com/c/LambdaTest" target="_bank">YouTube</a>
-</p>
-&emsp;
-&emsp;
-&emsp;
+Serenity BDD is a library that makes it easier to write high quality automated acceptance tests, with powerful reporting and living documentation features. It has strong support for both web testing with Selenium, and API testing using RestAssured.
 
-_Appium is a tool for automating native, mobile web, and hybrid applications on iOS, Android, and Windows platforms. It supports iOS native apps written in Objective-C or Swift and Android native apps written in Java or Kotlin. It also supports mobile web apps accessed using a mobile browser (Appium supports Safari on iOS and Chrome or the built-in 'Browser' app on Android). Perform Appium automation tests on [LambdaTest's online cloud](https://www.lambdatest.com/appium-mobile-testing?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)._
+Serenity strongly encourages good test automation design, and supports several design patterns, including classic Page Objects, the newer Lean Page Objects/ Action Classes approach, and the more sophisticated and flexible Screenplay pattern.
 
-_Learn the basics of [Appium testing on the LambdaTest platform](https://www.lambdatest.com/support/docs/getting-started-with-appium-testing/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)._
+The latest version of Serenity supports Cucumber 6.x.
 
-*Learn how to configure and run your Java Serenity automation testing scripts on LambdaTest platform using Serenity.*
+## The starter project
+The best place to start with Serenity and Cucumber is to clone or download the starter project on Github ([https://github.com/serenity-bdd/serenity-cucumber-starter](https://github.com/serenity-bdd/serenity-cucumber-starter)). This project gives you a basic project setup, along with some sample tests and supporting classes. There are two versions to choose from. The master branch uses a more classic approach, using action classes and lightweight page objects, whereas the **[screenplay](https://github.com/serenity-bdd/serenity-cucumber-starter/tree/screenplay)** branch shows the same sample test implemented using Screenplay.
 
-[<img height="58" width="200" src="https://user-images.githubusercontent.com/70570645/171866795-52c11b49-0728-4229-b073-4b704209ddde.png">](https://accounts.lambdatest.com/register?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)
-
-## Table Of Contents
-
-- [Pre-requisites](#pre-requisites)
-- [Run Your First Test](#run-your-first-test)
-- [Executing The Tests](#executing-the-tests)
-
-## Pre-requisites
-
-Before you can start performing App automation testing with Appium, you would need to follow these steps:
-
-- Install the latest **Java development environment** i.e. **JDK 1.6** or higher. We recommend using the latest version.
-
-- Install **Maven** which supports **JUnit** framework out of the box. **Maven** can be downloaded and installed following the steps from [the official website](https://maven.apache.org/). Maven can also be installed easily on **Linux/MacOS** using [Homebrew](https://brew.sh/) package manager.
-
-### Clone The Sample Project
-
-Clone the LambdaTest’s [LT-appium-java-serenity](https://github.com/LambdaTest/LT-appium-java-serenity) and navigate to the code directory as shown below:
-
-```bash
-git clone https://github.com/LambdaTest/LT-appium-java-serenity
-cd LT-appium-java-serenity
+### The project directory structure
+The project has build scripts for both Maven and Gradle, and follows the standard directory structure used in most Serenity projects:
+```Gherkin
+src
+  + main
+  + test
+    + java                        Test runners and supporting code
+    + resources
+      + features                  Feature files
+     + search                  Feature file subdirectories 
+             search_by_keyword.feature
 ```
 
-### Setting Up Your Authentication
+Serenity 2.2.13 introduced integration with WebdriverManager to download webdriver binaries.
 
-Make sure you have your LambdaTest credentials with you to run test automation scripts on LambdaTest. To obtain your access credentials, [purchase a plan](https://billing.lambdatest.com/billing/plans?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-python-gauge) or access the [Automation Dashboard](https://appautomation.lambdatest.com/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-python-gauge).
+## The sample scenario
+Both variations of the sample project uses the sample Cucumber scenario. In this scenario, Sergey (who likes to search for stuff) is performing a search on the internet:
 
-Set LambdaTest `Username` and `Access Key` in environment variables.
+```Gherkin
+Feature: Search by keyword
 
-**For Linux/macOS:**
-
-```bash
-export LT_USERNAME=YOUR_LAMBDATEST_USERNAME \
-export LT_ACCESS_KEY=YOUR_LAMBDATEST_ACCESS_KEY
+  Scenario: Searching for a term
+    Given Sergey is researching things on the internet
+    When he looks up "Cucumber"
+    Then he should see information about "Cucumber"
 ```
 
-**For Windows:**
+### The Screenplay implementation
+The sample code in the master branch uses the Screenplay pattern. The Screenplay pattern describes tests in terms of actors and the tasks they perform. Tasks are represented as objects performed by an actor, rather than methods. This makes them more flexible and composable, at the cost of being a bit more wordy. Here is an example:
+```java
+    @Given("{actor} is researching things on the internet")
+    public void researchingThings(Actor actor) {
+        actor.wasAbleTo(NavigateTo.theWikipediaHomePage());
+    }
 
-```powershell
-set LT_USERNAME=YOUR_LAMBDATEST_USERNAME `
-set LT_ACCESS_KEY=YOUR_LAMBDATEST_ACCESS_KEY
+    @When("{actor} looks up {string}")
+    public void searchesFor(Actor actor, String term) {
+        actor.attemptsTo(
+                LookForInformation.about(term)
+        );
+    }
+
+    @Then("{actor} should see information about {string}")
+    public void should_see_information_about(Actor actor, String term) {
+        actor.attemptsTo(
+                Ensure.that(WikipediaArticle.HEADING).hasText(term)
+        );
+    }
 ```
 
-### Upload Your Application
+Screenplay classes emphasise reusable components and a very readable declarative style, whereas Lean Page Objects and Action Classes (that you can see further down) opt for a more imperative style.
 
-**Step-3:** Upload your **_iOS_** application (.ipa file) or **_android_** application (.apk file) to the LambdaTest servers using our **REST API**. You need to provide your **Username** and **AccessKey** in the format `Username:AccessKey` in the **cURL** command for authentication. Make sure to add the path of the **appFile** in the cURL request. Here is an example cURL request to upload your app using our REST API:
-
-**Using App File:**
-
-**Linux/macOS:**
-
-```bash
-curl -u "YOUR_LAMBDATEST_USERNAME:YOUR_LAMBDATEST_ACCESS_KEY" \
---location --request POST 'https://manual-api.lambdatest.com/app/upload/realDevice' \
---form 'name="Android_App"' \
---form 'appFile=@"/Users/macuser/Downloads/proverbial_android.apk"'
+The `NavigateTo` class is responsible for opening the Wikipedia home page:
+```java
+public class NavigateTo {
+    public static Performable theWikipediaHomePage() {
+        return Task.where("{0} opens the Wikipedia home page",
+                Open.browserOn().the(WikipediaHomePage.class));
+    }
+}
 ```
 
-**Windows:**
-
-```powershell
-curl -u "YOUR_LAMBDATEST_USERNAME:YOUR_LAMBDATEST_ACCESS_KEY" -X POST "https://manual-api.lambdatest.com/app/upload/realDevice" -F "appFile=@"/Users/macuser/Downloads/proverbial_android.apk""
+The `LookForInformation` class does the actual search:
+```java
+public class LookForInformation {
+    public static Performable about(String searchTerm) {
+        return Task.where("{0} searches for '" + searchTerm + "'",
+                Enter.theValue(searchTerm)
+                        .into(SearchForm.SEARCH_FIELD)
+                        .thenHit(Keys.ENTER)
+        );
+    }
+}
 ```
 
-**Using App URL:**
+In Screenplay, we keep track of locators in light weight page or component objects, like this one:
+```java
+class SearchForm {
+    static Target SEARCH_FIELD = Target.the("search field")
+                                       .locatedBy("#searchInput");
 
-**Linux/macOS:**
-
-```bash
-curl -u "YOUR_LAMBDATEST_USERNAME:YOUR_LAMBDATEST_ACCESS_KEY" \
---location --request POST 'https://manual-api.lambdatest.com/app/upload/realDevice' \
---form 'name="Android_App"' \
---form 'url="https://prod-mobile-artefacts.lambdatest.com/assets/docs/proverbial_android.apk"'
+}
 ```
 
-**For Windows:**
+The Screenplay DSL is rich and flexible, and well suited to teams working on large test automation projects with many team members, and who are reasonably comfortable with Java and design patterns. 
 
-```powershell
-curl -u "YOUR_LAMBDATEST_USERNAME:YOUR_LAMBDATEST_ACCESS_KEY" -X POST "https://manual-api.lambdatest.com/app/upload/realDevice" -d "{"url":"https://prod-mobile-artefacts.lambdatest.com/assets/docs/proverbial_android.apk","name":"sample.apk"}"
-```
+### The Action Classes implementation.
 
-**Tip:**
-
-- If you do not have any **.apk** or **.ipa** file, you can run your sample tests on LambdaTest by using our sample :link: [Android app](https://prod-mobile-artefacts.lambdatest.com/assets/docs/proverbial_android.apk) or sample :link: [iOS app](https://prod-mobile-artefacts.lambdatest.com/assets/docs/proverbial_ios.ipa).
-- Response of above cURL will be a **JSON** object containing the `App URL` of the format - <lt://APP123456789123456789> and will be used in the next step.
-
-## Run Your First Test
-
-Once you are done with the above-mentioned steps, you can initiate your first Java Serenity test on LambdaTest.
-
-**Test Scenario:** Check out [LambdaTestSerenityDriver.java](https://github.com/LambdaTest/LT-appium-java-serenity/blob/master/src/test/java/com/lambdatest/LambdaTestSerenityDriver.java) file to view the sample test script
-
-### Configuring Your Test Capabilities
-
-You can update your custom capabilities in test scripts. In this sample project, we are passing platform name, platform version, device name and app url (generated earlier) along with other capabilities like build name and test name via capabilities object. The capabilities object in the sample code are defined as:
+A more imperative-style implementation using the Action Classes pattern can be found in the `action-classes` branch. The glue code in this version looks this this:
 
 ```java
-    DesiredCapabilities capabilities = new DesiredCapabilities();
-		capabilities.setCapability("plugin","Serenity LambdaTest Plugin");
-		capabilities.setCapability("isRealMobile", true);
-		capabilities.setCapability("app","lt://proverbial-android");     // Enter app url here
+    @Given("^(?:.*) is researching things on the internet")
+    public void i_am_on_the_Wikipedia_home_page() {
+        navigateTo.theHomePage();
+    }
+
+    @When("she/he looks up {string}")
+    public void i_search_for(String term) {
+        searchFor.term(term);
+    }
+
+    @Then("she/he should see information about {string}")
+    public void all_the_result_titles_should_contain_the_word(String term) {
+        assertThat(searchResult.displayed()).contains(term);
+    }
 ```
 
-**Info Note:**
-
-- You must add the generated **APP_URL** to the `"app"` capability in the config file.
-- You can generate capabilities for your test requirements with the help of our inbuilt **[Capabilities Generator tool](https://www.lambdatest.com/capabilities-generator/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-python-gauge)**. A more Detailed Capability Guide is available [here](https://www.lambdatest.com/support/docs/desired-capabilities-in-appium/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-python-gauge).
-
-## Executing The Tests
-
-The tests can be executed in the terminal using the following command:
-
+These classes are declared using the Serenity `@Steps` annotation, shown below:
 ```java
-mvn verify -P single      //For single test
-mvn verify -P parallel    //For parallel test
+    @Steps
+    NavigateTo navigateTo;
+
+    @Steps
+    SearchFor searchFor;
+
+    @Steps
+    SearchResult searchResult;
 ```
 
-## Testing Locally Hosted Or Privately Hosted Projects
+The `@Steps`annotation tells Serenity to create a new instance of the class, and inject any other steps or page objects that this instance might need.
 
-You can test your locally hosted or privately hosted projects with LambdaTest Selenium grid using LambdaTest Tunnel. All you would have to do is set up an SSH tunnel using tunnel and pass toggle `tunnel = True` via desired capabilities. LambdaTest Tunnel establishes a secure SSH protocol based tunnel that allows you in testing your locally hosted or privately hosted pages, even before they are live.
+Each action class models a particular facet of user behaviour: navigating to a particular page, performing a search, or retrieving the results of a search. These classes are designed to be small and self-contained, which makes them more stable and easier to maintain.
 
-Refer our [LambdaTest Tunnel documentation](https://www.lambdatest.com/support/docs/testing-locally-hosted-pages/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity) for more information.
-
-Here’s how you can establish LambdaTest Tunnel.
-
-Download the binary file of:
-* [LambdaTest Tunnel for Windows](https://downloads.lambdatest.com/tunnel/v3/windows/64bit/LT_Windows.zip)
-* [LambdaTest Tunnel for macOS](https://downloads.lambdatest.com/tunnel/v3/mac/64bit/LT_Mac.zip)
-* [LambdaTest Tunnel for Linux](https://downloads.lambdatest.com/tunnel/v3/linux/64bit/LT_Linux.zip)
-
-Open command prompt and navigate to the binary folder.
-
-Run the following command:
-
-```bash
-LT -user {user’s login email} -key {user’s access key}
-```
-So if your user name is lambdatest@example.com and key is 123456, the command would be:
-
-```bash
-LT -user lambdatest@example.com -key 123456
-```
-Once you are able to connect **LambdaTest Tunnel** successfully, you would just have to pass on tunnel capabilities in the code shown below :
-
-**Tunnel Capability**
-
+The `NavigateTo` class is an example of a very simple action class. In a larger application, it might have some other methods related to high level navigation, but in our sample project, it just needs to open the DuckDuckGo home page:
 ```java
-DesiredCapabilities capabilities = new DesiredCapabilities();        
-        capabilities.setCapability("tunnel", true);
+public class NavigateTo {
+
+    WikipediaHomePage homePage;
+
+    @Step("Open the Wikipedia home page")
+    public void theHomePage() {
+        homePage.open();
+    }
+}
 ```
 
-## Documentation & Resources :books:
+It does this using a standard Serenity Page Object. Page Objects are often very minimal, storing just the URL of the page itself:
+```java
+@DefaultUrl("https://wikipedia.org")
+public class WikipediaHomePage extends PageObject {}
+```
 
-      
-Visit the following links to learn more about LambdaTest's features, setup and tutorials around test automation, mobile app testing, responsive testing, and manual testing.
+The second class, `SearchFor`, is an interaction class. It needs to interact with the web page, and to enable this, we make the class extend the Serenity `UIInteractionSteps`. This gives the class full access to the powerful Serenity WebDriver API, including the `$()` method used below, which locates a web element using a `By` locator or an XPath or CSS expression:
+```java
+public class SearchFor extends UIInteractionSteps {
 
-* [LambdaTest Documentation](https://www.lambdatest.com/support/docs/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)
-* [LambdaTest Blog](https://www.lambdatest.com/blog/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)
-* [LambdaTest Learning Hub](https://www.lambdatest.com/learning-hub/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)    
+    @Step("Search for term {0}")
+    public void term(String term) {
+        $(SearchForm.SEARCH_FIELD).clear();
+        $(SearchForm.SEARCH_FIELD).sendKeys(term, Keys.ENTER);
+    }
+}
+```
 
-## LambdaTest Community :busts_in_silhouette:
+The `SearchForm` class is typical of a light-weight Page Object: it is responsible uniquely for locating elements on the page, and it does this by defining locators or occasionally by resolving web elements dynamically.
+```java
+class SearchForm {
+    static By SEARCH_FIELD = By.cssSelector("#searchInput");
+}
+```
 
-The [LambdaTest Community](https://community.lambdatest.com/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity) allows people to interact with tech enthusiasts. Connect, ask questions, and learn from tech-savvy people. Discuss best practises in web development, testing, and DevOps with professionals from across the globe 🌎
+The last step library class used in the step definition code is the `SearchResult` class. The job of this class is to query the web page, and retrieve a list of search results that we can use in the AssertJ assertion at the end of the test. This class also extends `UIInteractionSteps` and
+```java
+public class SearchResult extends UIInteractionSteps {
+    public String displayed() {
+        return find(WikipediaArticle.HEADING).getText();
+    }
+}
+```
 
-## What's New At LambdaTest ❓
+The `WikipediaArticle` class is a lean Page Object that locates the article titles on the results page:
+```java
+public class WikipediaArticle {
+    public static final By HEADING =  By.id("firstHeading");
+}
+```
 
-To stay updated with the latest features and product add-ons, visit [Changelog](https://changelog.lambdatest.com/) 
-      
-## About LambdaTest
+The main advantage of the approach used in this example is not in the lines of code written, although Serenity does reduce a lot of the boilerplate code that you would normally need to write in a web test. The real advantage is in the use of many small, stable classes, each of which focuses on a single job. This application of the _Single Responsibility Principle_ goes a long way to making the test code more stable, easier to understand, and easier to maintain.
 
-[LambdaTest](https://www.lambdatest.com/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity) is a leading test execution and orchestration platform that is fast, reliable, scalable, and secure. It allows users to run both manual and automated testing of web and mobile apps across 3000+ different browsers, operating systems, and real device combinations. Using LambdaTest, businesses can ensure quicker developer feedback and hence achieve faster go to market. Over 500 enterprises and 1 Million + users across 130+ countries rely on LambdaTest for their testing needs.    
+## Executing the tests
+To run the sample project, you can either just run the `CucumberTestSuite` test runner class, or run either `mvn verify` or `gradle test` from the command line.
 
-### Features
+By default, the tests will run using Chrome. You can run them in Firefox by overriding the `driver` system property, e.g.
+```json
+$ mvn clean verify -Ddriver=firefox
+```
+Or
+```json
+$ gradle clean test -Pdriver=firefox
+```
 
-* Run Selenium, Cypress, Puppeteer, Playwright, and Appium automation tests across 3000+ real desktop and mobile environments.
-* Real-time cross browser testing on 3000+ environments.
-* Test on Real device cloud
-* Blazing fast test automation with HyperExecute
-* Accelerate testing, shorten job times and get faster feedback on code changes with Test At Scale.
-* Smart Visual Regression Testing on cloud
-* 120+ third-party integrations with your favorite tool for CI/CD, Project Management, Codeless Automation, and more.
-* Automated Screenshot testing across multiple browsers in a single click.
-* Local testing of web and mobile apps.
-* Online Accessibility Testing across 3000+ desktop and mobile browsers, browser versions, and operating systems.
-* Geolocation testing of web and mobile apps across 53+ countries.
-* LT Browser - for responsive testing across 50+ pre-installed mobile, tablets, desktop, and laptop viewports
+The test results will be recorded in the `target/site/serenity` directory.
 
-    
-[<img height="58" width="200" src="https://user-images.githubusercontent.com/70570645/171866795-52c11b49-0728-4229-b073-4b704209ddde.png">](https://accounts.lambdatest.com/register?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)
+## Generating the reports
+Since the Serenity reports contain aggregate information about all of the tests, they are not generated after each individual test (as this would be extremenly inefficient). Rather, The Full Serenity reports are generated by the `serenity-maven-plugin`. You can trigger this by running `mvn serenity:aggregate` from the command line or from your IDE.
 
-## We are here to help you :headphones:
+They reports are also integrated into the Maven build process: the following code in the `pom.xml` file causes the reports to be generated automatically once all the tests have completed when you run `mvn verify`?
 
-* Got a query? we are available 24x7 to help. [Contact Us](mailto:support@lambdatest.com)
-* For more info, visit - [LambdaTest](https://www.lambdatest.com/?utm_source=github&utm_medium=repo&utm_campaign=LT-appium-java-serenity)
+```
+             <plugin>
+                <groupId>net.serenity-bdd.maven.plugins</groupId>
+                <artifactId>serenity-maven-plugin</artifactId>
+                <version>${serenity.maven.version}</version>
+                <configuration>
+                    <tags>${tags}</tags>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>serenity-reports</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+```
+
+## Simplified WebDriver configuration and other Serenity extras
+The sample projects both use some Serenity features which make configuring the tests easier. In particular, Serenity uses the `serenity.conf` file in the `src/test/resources` directory to configure test execution options.  
+### Webdriver configuration
+The WebDriver configuration is managed entirely from this file, as illustrated below:
+```java
+webdriver {
+    driver = chrome
+}
+headless.mode = true
+
+chrome.switches="""--start-maximized;--test-type;--no-sandbox;--ignore-certificate-errors;
+                   --disable-popup-blocking;--disable-default-apps;--disable-extensions-file-access-check;
+                   --incognito;--disable-infobars,--disable-gpu"""
+
+```
+
+Serenity uses WebDriverManager to download the WebDriver binaries automatically before the tests are executed.
+
+### Environment-specific configurations
+We can also configure environment-specific properties and options, so that the tests can be run in different environments. Here, we configure three environments, __dev__, _staging_ and _prod_, with different starting URLs for each:
+```json
+environments {
+  default {
+    webdriver.base.url = "https://duckduckgo.com"
+  }
+  dev {
+    webdriver.base.url = "https://duckduckgo.com/dev"
+  }
+  staging {
+    webdriver.base.url = "https://duckduckgo.com/staging"
+  }
+  prod {
+    webdriver.base.url = "https://duckduckgo.com/prod"
+  }
+}
+```
+
+You use the `environment` system property to determine which environment to run against. For example to run the tests in the staging environment, you could run:
+```json
+$ mvn clean verify -Denvironment=staging
+```
+
+See [**this article**](https://johnfergusonsmart.com/environment-specific-configuration-in-serenity-bdd/) for more details about this feature.
+
+## Want to learn more?
+For more information about Serenity BDD, you can read the [**Serenity BDD Book**](https://serenity-bdd.github.io/theserenitybook/latest/index.html), the official online Serenity documentation source. Other sources include:
+* **[Learn Serenity BDD Online](https://expansion.serenity-dojo.com/)** with online courses from the Serenity Dojo Training Library
+* **[Byte-sized Serenity BDD](https://www.youtube.com/channel/UCav6-dPEUiLbnu-rgpy7_bw/featured)** - tips and tricks about Serenity BDD
+* For regular posts on agile test automation best practices, join the **[Agile Test Automation Secrets](https://www.linkedin.com/groups/8961597/)** groups on [LinkedIn](https://www.linkedin.com/groups/8961597/) and [Facebook](https://www.facebook.com/groups/agiletestautomation/)
+* [**Serenity BDD Blog**](https://johnfergusonsmart.com/category/serenity-bdd/) - regular articles about Serenity BDD
+# serenity_run_directly_from_build
